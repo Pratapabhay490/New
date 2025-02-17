@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Subjects Directory</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            background-color: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .category-card {
+            margin-bottom: 20px;
+        }
+
+        .category-header {
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .subject-item {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .subject-item:hover {
+            background-color: #e3f2fd;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .subjects-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const MedicalSubjectsApp = () => {
+            const [searchTerm, setSearchTerm] = React.useState('');
+
+            const subjects = {
+                'Basic Sciences': [
+                    'Anatomy',
+                    'Physiology',
+                    'Biochemistry',
+                    'Histology',
+                    'Embryology',
+                    'Microbiology',
+                    'Immunology',
+                    'Pathology',
+                    'Pharmacology'
+                ],
+                'Clinical Sciences': [
+                    'Internal Medicine',
+                    'Surgery',
+                    'Pediatrics',
+                    'Obstetrics & Gynecology',
+                    'Psychiatry',
+                    'Dermatology',
+                    'Ophthalmology',
+                    'Otorhinolaryngology',
+                    'Orthopedics'
+                ],
+                'Diagnostic Sciences': [
+                    'Radiology',
+                    'Laboratory Medicine',
+                    'Nuclear Medicine',
+                    'Clinical Pathology',
+                    'Medical Imaging'
+                ],
+                'Public Health': [
+                    'Epidemiology',
+                    'Biostatistics',
+                    'Environmental Health',
+                    'Health Policy',
+                    'Community Medicine'
+                ],
+                'Specialties': [
+                    'Cardiology',
+                    'Neurology',
+                    'Endocrinology',
+                    'Gastroenterology',
+                    'Nephrology',
+                    'Pulmonology',
+                    'Hematology',
+                    'Oncology',
+                    'Rheumatology'
+                ]
+            };
+
+            const filteredSubjects = Object.entries(subjects).reduce((acc, [category, subjectList]) => {
+                const filtered = subjectList.filter(subject =>
+                    subject.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                if (filtered.length > 0) {
+                    acc[category] = filtered;
+                }
+                return acc;
+            }, {});
+
+            return (
+                <div className="container">
+                    <div className="card">
+                        <div className="card-header">
+                            <h1 className="card-title">Medical Subjects Directory</h1>
+                        </div>
+                        <div className="card-content">
+                            <div className="search-container">
+                                <span className="search-icon">🔍</span>
+                                <input
+                                    type="text"
+                                    className="search-input"
+                                    placeholder="Search subjects..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+
+                            {Object.entries(filteredSubjects).map(([category, subjectList]) => (
+                                <div key={category} className="category-card card">
+                                    <div className="category-header">
+                                        <h2 className="category-title">{category}</h2>
+                                    </div>
+                                    <div className="subjects-grid">
+                                        {subjectList.map((subject) => (
+                                            <div key={subject} className="subject-item">
+                                                {subject}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<MedicalSubjectsApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
