@@ -1,0 +1,30 @@
+{
+  "name": "studysync",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time collaborative study platform for 2 users",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "db:generate": "cd apps/backend && pnpm prisma generate",
+    "db:migrate": "cd apps/backend && pnpm prisma migrate dev",
+    "db:push": "cd apps/backend && pnpm prisma db push",
+    "db:studio": "cd apps/backend && pnpm prisma studio",
+    "docker:up": "docker-compose -f infrastructure/docker/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f infrastructure/docker/docker-compose.yml down",
+    "setup": "pnpm install && pnpm db:generate && pnpm db:migrate"
+  },
+  "devDependencies": {
+    "turbo": "^1.11.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

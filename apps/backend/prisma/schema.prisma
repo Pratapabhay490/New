@@ -1,0 +1,91 @@
+// Prisma schema for StudySync
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoomStatus {
+  ACTIVE
+  CLOSED
+  EXPIRED
+}
+
+model Room {
+  id                String        @id @default(uuid())
+  createdAt         DateTime      @default(now())
+  expiresAt         DateTime
+  status            RoomStatus    @default(ACTIVE)
+  creatorSocketId   String?
+  maxParticipants   Int           @default(2)
+  
+  participants      Participant[]
+  sessions          Session[]
+  annotationEvents  AnnotationEvent[]
+  
+  @@index([status, expiresAt])
+  @@index([createdAt])
+  @@map("rooms")
+}
+
+model Participant {
+  id               String    @id @default(uuid())
+  roomId           String
+  socketId         String    @unique
+  joinedAt         DateTime  @default(now())
+  leftAt           DateTime?
+  isActive         Boolean   @default(true)
+  peerId           String?
+  
+  room             Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  annotationEvents AnnotationEvent[]
+  
+  @@index([roomId, isActive])
+  @@index([socketId])
+  @@map("participants")
+}
+
+model Session {
+  id               String    @id @default(uuid())
+  roomId           String
+  startedAt        DateTime  @default(now())
+  endedAt          DateTime?
+  duration         Int?      // in seconds
+  participantCount Int       @default(0)
+  
+  room             Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  @@index([roomId])
+  @@index([startedAt])
+  @@map("sessions")
+}
+
+enum AnnotationEventType {
+  STROKE_START
+  STROKE_UPDATE
+  STROKE_END
+  CLEAR
+  UNDO
+  REDO
+  TOOL_CHANGE
+}
+
+model AnnotationEvent {
+  id            String              @id @default(uuid())
+  roomId        String
+  participantId String
+  eventType     AnnotationEventType
+  payload       Json
+  timestamp     DateTime            @default(now())
+  
+  room          Room                @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  participant   Participant         @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  
+  @@index([roomId, timestamp])
+  @@index([participantId])
+  @@map("annotation_events")
+}
